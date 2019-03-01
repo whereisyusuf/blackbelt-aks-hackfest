@@ -67,194 +67,33 @@ service/web          LoadBalancer   10.0.1.52    10.1.0.251    8080:31142/TCP   
 Create an Application Gateway
 
 ```cli
-az network application-gateway create --name yr-aks-appgateway --resource-group yr-aks-rg --capacity 1 --frontend-port 80 --http-settings-port 8080 --http-settings-protocol Http --public-ip-address yr-aks-appgateway-ip --servers 10.1.0.251 --sku Standard_Small --subnet appg-subnet --vnet-name yr-aks-rg-vnet
+az network application-gateway create --name yr-aks-appgateway --resource-group yr-aks-rg --capacity 1 --frontend-port 80 --http-settings-port 8080 --http-settings-protocol Http --public-ip-address yr-aks-appgateway-ip --servers 10.1.0.251 --sku WAF_Medium --subnet appg-subnet --vnet-name yr-aks-rg-vnet
+```
+The above creates an app gateway with a backend address pool for the WEb. We have to add another address pool for the API
+
+```cli
+az network application-gateway address-pool create --name yr-aks-appgateway-api-pool --gateway-name yr-aks-appgateway --resource-group yr-aks-rg --servers 10.1.0.250
 ```
 
-Output:
+Create listener 
 
-```json
-{
-  "applicationGateway": {
-    "authenticationCertificates": [],
-    "backendAddressPools": [
-      {
-        "etag": "W/\"4fbdb53c-4d10-4e20-8add-4b65641c4185\"",
-        "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/backendAddressPools/appGatewayBackendPool",
-        "name": "appGatewayBackendPool",
-        "properties": {
-          "backendAddresses": [
-            {
-              "ipAddress": "10.1.0.251"
-            }
-          ],
-          "provisioningState": "Succeeded",
-          "requestRoutingRules": [
-            {
-              "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/requestRoutingRules/rule1",
-              "resourceGroup": "yr-aks-rg"
-            }
-          ]
-        },
-        "resourceGroup": "yr-aks-rg",
-        "type": "Microsoft.Network/applicationGateways/backendAddressPools"
-      }
-    ],
-    "backendHttpSettingsCollection": [
-      {
-        "etag": "W/\"4fbdb53c-4d10-4e20-8add-4b65641c4185\"",
-        "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/backendHttpSettingsCollection/appGatewayBackendHttpSettings",
-        "name": "appGatewayBackendHttpSettings",
-        "properties": {
-          "connectionDraining": {
-            "drainTimeoutInSec": 1,
-            "enabled": false
-          },
-          "cookieBasedAffinity": "Disabled",
-          "pickHostNameFromBackendAddress": false,
-          "port": 8080,
-          "protocol": "Http",
-          "provisioningState": "Succeeded",
-          "requestRoutingRules": [
-            {
-              "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/requestRoutingRules/rule1",
-              "resourceGroup": "yr-aks-rg"
-            }
-          ],
-          "requestTimeout": 30
-        },
-        "resourceGroup": "yr-aks-rg",
-        "type": "Microsoft.Network/applicationGateways/backendHttpSettingsCollection"
-      }
-    ],
-    "frontendIPConfigurations": [
-      {
-        "etag": "W/\"4fbdb53c-4d10-4e20-8add-4b65641c4185\"",
-        "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/frontendIPConfigurations/appGatewayFrontendIP",
-        "name": "appGatewayFrontendIP",
-        "properties": {
-          "httpListeners": [
-            {
-              "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/httpListeners/appGatewayHttpListener",
-              "resourceGroup": "yr-aks-rg"
-            }
-          ],
-          "privateIPAllocationMethod": "Dynamic",
-          "provisioningState": "Succeeded",
-          "publicIPAddress": {
-            "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/publicIPAddresses/yr-aks-appgateway-ip",
-            "resourceGroup": "yr-aks-rg"
-          }
-        },
-        "resourceGroup": "yr-aks-rg",
-        "type": "Microsoft.Network/applicationGateways/frontendIPConfigurations"
-      }
-    ],
-    "frontendPorts": [
-      {
-        "etag": "W/\"4fbdb53c-4d10-4e20-8add-4b65641c4185\"",
-        "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/frontendPorts/appGatewayFrontendPort",
-        "name": "appGatewayFrontendPort",
-        "properties": {
-          "httpListeners": [
-            {
-              "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/httpListeners/appGatewayHttpListener",
-              "resourceGroup": "yr-aks-rg"
-            }
-          ],
-          "port": 80,
-          "provisioningState": "Succeeded"
-        },
-        "resourceGroup": "yr-aks-rg",
-        "type": "Microsoft.Network/applicationGateways/frontendPorts"
-      }
-    ],
-    "gatewayIPConfigurations": [
-      {
-        "etag": "W/\"4fbdb53c-4d10-4e20-8add-4b65641c4185\"",
-        "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/gatewayIPConfigurations/appGatewayFrontendIP",
-        "name": "appGatewayFrontendIP",
-        "properties": {
-          "provisioningState": "Succeeded",
-          "subnet": {
-            "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/virtualNetworks/yr-aks-rg-vnet/subnets/appg-subnet",
-            "resourceGroup": "yr-aks-rg"
-          }
-        },
-        "resourceGroup": "yr-aks-rg",
-        "type": "Microsoft.Network/applicationGateways/gatewayIPConfigurations"
-      }
-    ],
-    "httpListeners": [
-      {
-        "etag": "W/\"4fbdb53c-4d10-4e20-8add-4b65641c4185\"",
-        "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/httpListeners/appGatewayHttpListener",
-        "name": "appGatewayHttpListener",
-        "properties": {
-          "frontendIPConfiguration": {
-            "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/frontendIPConfigurations/appGatewayFrontendIP",
-            "resourceGroup": "yr-aks-rg"
-          },
-          "frontendPort": {
-            "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/frontendPorts/appGatewayFrontendPort",
-            "resourceGroup": "yr-aks-rg"
-          },
-          "protocol": "Http",
-          "provisioningState": "Succeeded",
-          "requestRoutingRules": [
-            {
-              "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/requestRoutingRules/rule1",
-              "resourceGroup": "yr-aks-rg"
-            }
-          ],
-          "requireServerNameIndication": false
-        },
-        "resourceGroup": "yr-aks-rg",
-        "type": "Microsoft.Network/applicationGateways/httpListeners"
-      }
-    ],
-    "operationalState": "Running",
-    "probes": [],
-    "provisioningState": "Succeeded",
-    "redirectConfigurations": [],
-    "requestRoutingRules": [
-      {
-        "etag": "W/\"4fbdb53c-4d10-4e20-8add-4b65641c4185\"",
-        "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/requestRoutingRules/rule1",
-        "name": "rule1",
-        "properties": {
-          "backendAddressPool": {
-            "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/backendAddressPools/appGatewayBackendPool",
-            "resourceGroup": "yr-aks-rg"
-          },
-          "backendHttpSettings": {
-            "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/backendHttpSettingsCollection/appGatewayBackendHttpSettings",
-            "resourceGroup": "yr-aks-rg"
-          },
-          "httpListener": {
-            "id": "/subscriptions/967b4ee2-f688-4848-939e-8f7e81e738fe/resourceGroups/yr-aks-rg/providers/Microsoft.Network/applicationGateways/yr-aks-appgateway/httpListeners/appGatewayHttpListener",
-            "resourceGroup": "yr-aks-rg"
-          },
-          "provisioningState": "Succeeded",
-          "ruleType": "Basic"
-        },
-        "resourceGroup": "yr-aks-rg",
-        "type": "Microsoft.Network/applicationGateways/requestRoutingRules"
-      }
-    ],
-    "resourceGuid": "bdcacb78-a088-48e2-838d-22be24f192e3",
-    "rewriteRuleSets": [],
-    "sku": {
-      "capacity": 1,
-      "name": "Standard_Small",
-      "tier": "Standard"
-    },
-    "sslCertificates": [],
-    "urlPathMaps": []
-  }
-}
+```cli
+az network application-gateway http-listener create --name apibackendListener --frontend-ip appGatewayFrontendIP --frontend-port 8081 --resource-group yr-aks-rg --gateway-name yr-aks-appgateway
+
+az network application-gateway frontend-port create -g yr-aks-rg --gateway-name yr-aks-appgateway --name apiPort --port 8081
+
+az network application-gateway http-listener create -g yr-aks-rg --gateway-name yr-aks-appgateway --name apiListener --frontend-ip appGatewayFrontendIP --frontend-port apiPort
+
+az network application-gateway http-settings create -g yr-aks-rg --gateway-name yr-aks-appgateway --port 3000 --name apiHttpSettings
+
+az network application-gateway rule create -g yr-aks-rg --gateway-name yr-aks-appgateway --rule-type basic --address-pool yr-aks-appgateway-api-pool --http-listener apiListener --name apiRule --http-settings apiHttpSettings
+
 ```
 
-You can now confirm that the application is working on the app gateway url by pasting its public IP (without port 8080) to check if the app is working as expected. .
+You can also setup Path based redirection as indicated here - WIll leave this as an exercise!
+
+You can now confirm that the application is working on the app gateway url by pasting its public IP (without port 8080) to check if the app is working as expected. 
+You can also check if the API is now accessible over port 8081. 
 
 
 ## Attribution:
