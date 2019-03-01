@@ -45,7 +45,7 @@ spec:
             memory: "55M"
         env:
         - name:  MONGODB_URI
-          value: "mongodb://yr-aks-rating-db:Ph6de2XPeiXrA0Rcg1XGDcQIJPoirO3N8yAXLaChbNPBp00n8N6TaoU8VDcJZraCDMnR6VwxPkcs9Pv59jBlvg==@yr-aks-rating-db.documents.azure.com:10255/heroratings?ssl=true&replicaSet=globaldb"
+          value: "mongodb://yr-aks-rating-db:**<Password>**@yr-aks-rating-db.documents.azure.com:10255/heroratings?ssl=true&replicaSet=globaldb"
         ports:
         - containerPort:  3000
           name:  heroes-api
